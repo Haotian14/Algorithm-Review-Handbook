@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 频率 | 典型问法 |
 |---|---|---|
 | ResNet 的残差 | ★★★ | 为什么能训到 100+ 层 |
@@ -52,7 +54,7 @@
 5. **检测头**：分类（C+1 类）+ 精细 bbox 回归。
 
 **Q：RoI Pooling 和 RoI Align 的区别？（必问）**
-RoI Pooling 有**两次量化取整**（proposal 坐标 → 特征图网格，以及划分 bin），导致特征与原图位置**错位**，对小目标和分割影响大。RoI Align 用**双线性插值**在浮点坐标上采样，不取整，Mask R-CNN 靠这个把 mask AP 提升了约 10%。
+RoI Pooling 有**两次量化取整**（proposal 坐标 → 特征图网格，以及划分 bin），导致特征与原图位置**错位**，对小目标和分割影响大。RoI Align 用**双线性插值**在浮点坐标上采样，不取整，Mask R-CNN 靠这个显著提升了 mask AP〔Mask R-CNN, ICCV 2017〕。
 
 ### 2.2 单阶段
 
@@ -123,7 +125,7 @@ CNN 有**局部性**和**平移不变性**两个强归纳偏置，ViT 几乎没�
 
 - **对比学习**：MoCo（动量编码器 + 队列维护大量负样本）、SimCLR（大 batch + 强增强 + 投影头）、BYOL/SimSiam（**无需负样本**，靠 predictor + stop-gradient 防坍缩）、DINO（自蒸馏，涌现出分割能力）。
 - **掩码建模**：**MAE**（掩码 75% 的 patch，只把可见 patch 送编码器，轻量解码器重建像素）、BEiT（重建离散 token）、SimMIM。
-- **MAE 为什么掩码率能到 75%（远高于 NLP 的 15%）？** 图像信息高度冗余，掩码少了模型可以靠邻域插值蒙混过关，学不到语义。
+- **MAE 为什么掩码率能到 75%（远高于 NLP 的 15%）？**〔MAE, CVPR 2022〕 图像信息高度冗余，掩码少了模型可以靠邻域插值蒙混过关，学不到语义。
 
 ---
 
@@ -153,7 +155,7 @@ $$L=\mathbb{E}_{t,x_0,\epsilon}\left[\|\epsilon-\epsilon_\theta(\sqrt{\bar\alpha
 **Q：怎么加速采样？** DDIM（确定性非马尔可夫采样，50 步即可）、DPM-Solver（把反向过程视为 ODE 用高阶数值解法，10-20 步）、**一致性模型/蒸馏**（LCM、SDXL-Turbo，1-4 步）。
 
 **Q：Stable Diffusion 的关键改动？**
-**Latent Diffusion** —— 先用 VAE 把图像压到 $64\times64\times4$ 的隐空间，在隐空间做扩散，计算量降低约 48 倍。条件注入靠 **cross-attention**（文本经 CLIP text encoder 编码后作为 K,V）。
+**Latent Diffusion** —— 先用 VAE 把图像压到 $64\times64\times4$ 的隐空间，在隐空间做扩散，大幅降低计算量〔Latent Diffusion, CVPR 2022〕。条件注入靠 **cross-attention**（文本经 CLIP text encoder 编码后作为 K,V）。
 
 **Q：CFG（Classifier-Free Guidance）是什么？**
 训练时按一定概率丢弃条件，让同一个模型既能有条件也能无条件预测；采样时：
@@ -207,6 +209,32 @@ $$L=\frac12\left[\text{CE}(\text{logits}, \text{arange}(N)) + \text{CE}(\text{lo
 | **随机擦除 / Cutout** | 模拟遮挡 |
 
 **注意**：增强要与任务匹配：数字识别不能上下翻转（6/9）、医学影像不能改变颜色语义、检测任务几何增强要同步变换标注框。
+
+---
+
+## 延伸阅读
+
+- *Deep Residual Learning*（He et al., CVPR 2016）/ *Densely Connected Convolutional Networks*（Huang et al., CVPR 2017）
+- *Squeeze-and-Excitation Networks*（Hu et al., CVPR 2018）
+- *A ConvNet for the 2020s*（Liu et al., CVPR 2022）—— ConvNeXt
+- *Faster R-CNN*（Ren et al., NeurIPS 2015）/ *Mask R-CNN*（He et al., ICCV 2017）—— RoI Align 的量化误差分析
+- *Focal Loss for Dense Object Detection*（Lin et al., ICCV 2017）—— RetinaNet
+- *Distance-IoU Loss*（Zheng et al., AAAI 2020）—— DIoU 与 CIoU
+- *End-to-End Object Detection with Transformers*（Carion et al., ECCV 2020）—— DETR
+- *Bridging the Gap Between Anchor-based and Anchor-free Detection (ATSS)*（Zhang et al., CVPR 2020）
+- *U-Net*（Ronneberger et al., MICCAI 2015）/ *Segment Anything*（Kirillov et al., ICCV 2023）
+- *An Image is Worth 16x16 Words*（Dosovitskiy et al., ICLR 2021）—— ViT
+- *Swin Transformer*（Liu et al., ICCV 2021）
+- *Masked Autoencoders Are Scalable Vision Learners*（He et al., CVPR 2022）—— 75% 掩码率的实验依据
+- *Denoising Diffusion Probabilistic Models*（Ho et al., NeurIPS 2020）
+- *Denoising Diffusion Implicit Models*（Song et al., ICLR 2021）—— DDIM
+- *High-Resolution Image Synthesis with Latent Diffusion Models*（Rombach et al., CVPR 2022）—— Stable Diffusion，隐空间压缩倍数的出处
+- *Classifier-Free Diffusion Guidance*（Ho & Salimans, 2022）
+- *Scalable Diffusion Models with Transformers*（Peebles & Xie, ICCV 2023）—— DiT
+- *Learning Transferable Visual Models From Natural Language Supervision*（Radford et al., ICML 2021）—— CLIP
+- *Visual Instruction Tuning*（Liu et al., NeurIPS 2023）—— LLaVA 两阶段训练
+- *BLIP-2*（Li et al., ICML 2023）—— Q-Former
+- *Evaluating Object Hallucination in Large Vision-Language Models*（Li et al., EMNLP 2023）—— POPE
 
 ---
 

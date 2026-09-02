@@ -8,6 +8,50 @@ const BANK = DATA.bank;
 const CAT = Object.fromEntries(BANK.categories.map(c => [c.id, c]));
 const QS = BANK.questions.map((q, i) => ({ ...q, id: `q${i}` }));
 
+const VOL_TIP = {
+  slow: '数学、经典机器学习、算法题这类内容，几年内不会变',
+  mid:  '一两年内需要复核一次',
+  fast: '领域变化快，建议面试前再对一遍最新进展',
+};
+
+/* 中英/别名映射：搜 "vanishing gradient" 也要能命中「梯度消失」 */
+const ALIAS = {
+  'vanishing gradient':'梯度消失','gradient vanishing':'梯度消失','exploding gradient':'梯度爆炸',
+  'batch norm':'BatchNorm 批归一化','batchnorm':'批归一化','layer norm':'LayerNorm 层归一化',
+  'layernorm':'层归一化','rmsnorm':'RMSNorm 归一化','dropout':'Dropout 随机失活',
+  'attention':'注意力','self-attention':'自注意力','cross attention':'交叉注意力',
+  'transformer':'Transformer 注意力','positional encoding':'位置编码','rope':'RoPE 旋转位置编码',
+  'kv cache':'KV Cache 显存','flashattention':'FlashAttention 注意力',
+  'overfitting':'过拟合','underfitting':'欠拟合','regularization':'正则化',
+  'bias variance':'偏差 方差','cross entropy':'交叉熵','softmax':'Softmax 归一化指数',
+  'backpropagation':'反向传播','backprop':'反向传播','learning rate':'学习率',
+  'warmup':'warmup 预热学习率','optimizer':'优化器','adam':'Adam 优化器',
+  'weight decay':'权重衰减 AdamW','residual':'残差连接','skip connection':'残差连接',
+  'embedding':'Embedding 向量','fine-tuning':'微调','finetune':'微调',
+  'quantization':'量化','distillation':'知识蒸馏','pruning':'剪枝',
+  'recall':'召回','ranking':'排序 精排','cold start':'冷启动','negative sampling':'负采样',
+  'multi-task':'多目标 多任务','position bias':'位置偏置','calibration':'校准',
+  'data leakage':'数据泄漏 穿越','imbalanced':'不平衡','feature engineering':'特征工程',
+  'decision tree':'决策树','random forest':'随机森林','gradient boosting':'GBDT 提升',
+  'clustering':'聚类','dimensionality reduction':'降维 PCA',
+  'object detection':'目标检测','segmentation':'分割','diffusion':'扩散模型',
+  'contrastive':'对比学习','tokenizer':'分词 tokenizer','tokenization':'分词',
+  'distributed training':'分布式训练','data parallel':'数据并行','tensor parallel':'张量并行',
+  'pipeline parallel':'流水线并行','mixed precision':'混合精度','oom':'OOM 显存',
+  'data skew':'数据倾斜','window function':'窗口函数','retention':'留存',
+  'system design':'系统设计','throughput':'吞吐','latency':'延迟',
+};
+/* 返回 [原始 token, 别名扩展出来的 token]。别名是精确译名，权重更高。 */
+function expandQuery(q) {
+  const low = q.toLowerCase();
+  const raw = low.split(/\s+/).filter(Boolean);
+  const alias = [];
+  for (const [k, v] of Object.entries(ALIAS)) {
+    if (low.includes(k)) alias.push(...v.toLowerCase().split(/\s+/).filter(Boolean));
+  }
+  return [raw, [...new Set(alias)].filter(t => !raw.includes(t))];
+}
+
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -197,6 +241,7 @@ function viewHome() {
             <p>${esc(c.desc)}</p>
             <div class="card-foot">
               <span>约 ${(c.words / 1000).toFixed(1)}k 字</span>
+              ${c.vol === 'fast' ? '<span class="vol vol-fast">时效快</span>' : ''}
               <span class="done-badge">✓ 已掌握</span>
             </div>
           </a>`).join('')}
@@ -217,7 +262,9 @@ function viewChapter(c) {
     <div class="chapter-kicker">
       <span>${esc(c.group)}</span><span class="dot"></span>
       <span>第 ${c.id.slice(0, 2)} 章</span><span class="dot"></span>
-      <span>约 ${(c.words / 1000).toFixed(1)}k 字</span>
+      <span>约 ${(c.words / 1000).toFixed(1)}k 字</span><span class="dot"></span>
+      <span>更新于 ${c.updated}</span>
+      <span class="vol vol-${c.vol}" title="${VOL_TIP[c.vol]}">时效 ${c.volLabel}</span>
     </div>
     <button class="mark-btn${done.has(c.id) ? ' on' : ''}" id="mark">
       <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
@@ -331,16 +378,26 @@ const INDEX = (() => {
 })();
 
 function search(query) {
-  const toks = query.toLowerCase().split(/\s+/).filter(Boolean);
-  if (!toks.length) return [];
+  const [raw, alias] = expandQuery(query);
+  if (!raw.length) return [];
   const hits = [];
   for (const it of INDEX) {
-    let score = 0, ok = true;
-    for (const t of toks) {
-      if (!it.low.includes(t)) { ok = false; break; }
-      score += it.heading.toLowerCase().includes(t) ? 6 : 1;
+    const head = it.heading.toLowerCase();
+    let score = 0, matched = 0;
+    for (const t of raw) {
+      if (!it.low.includes(t)) continue;
+      matched++; score += head.includes(t) ? 6 : 1;
     }
-    if (ok) hits.push({ it, score });
+    // 别名是查询词的精确译名，命中它比命中单个英文词更有说服力
+    for (const t of alias) {
+      if (!it.low.includes(t)) continue;
+      matched++; score += head.includes(t) ? 20 : 4;
+    }
+    if (!matched) continue;
+    if (raw.every(t => it.low.includes(t))) score += 60;      // 原查询完整命中
+    if (alias.length && alias.every(t => it.low.includes(t))) score += 60;
+    if (it.heading === '延伸阅读') score *= 0.25;             // 论文列表不该压过正文
+    hits.push({ it, score });
   }
   return hits.sort((a, b) => b.score - a.score).slice(0, 40).map(h => h.it);
 }
@@ -370,7 +427,8 @@ function closeSearch() { so.hidden = true; }
 
 function runSearch() {
   const q = si.value.trim();
-  const toks = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const [rawT, aliasT] = expandQuery(q);
+  const toks = [...rawT, ...aliasT];
   if (!q) { sr.innerHTML = `<div class="sr-empty">输入关键词搜索 ${CH.length} 章正文与 ${QS.length} 道题库</div>`; return; }
   const res = search(q);
   selIdx = 0;

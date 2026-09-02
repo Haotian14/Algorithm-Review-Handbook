@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 频率 | 典型问法 |
 |---|---|---|
 | 推荐系统整体链路 | ★★★ | 从请求到返回经过哪些阶段，为什么这么分 |
@@ -81,8 +83,8 @@
 | 方式 | 说明 |
 |---|---|
 | **随机负采样** | 从全库随机抽，是召回的主力负样本 |
-| **Batch 内负采样** | 同 batch 内其他样本的正例当负例，高效；但有**热门物品打压过度**问题，需要 **LogQ 校正**：$s' = s - \log p_{item}$ |
-| **Hard Negative** | 排名靠前但未点击的，提升区分度；比例不宜过高（经验 easy:hard ≈ 100:1） |
+| **Batch 内负采样** | 同 batch 内其他样本的正例当负例，高效；但有**热门物品打压过度**问题，需要 **LogQ 校正**：$s' = s - \log p_{item}$〔Yi et al., RecSys 2019〕 |
+| **Hard Negative** | 排名靠前但未点击的，提升区分度；比例不宜过高（easy:hard 量级约 100:1，**经验值，各家差异大**） |
 | 曝光未点击 | 可以少量混入，但不能作为主体 |
 
 **Q：为什么要做 LogQ 校正？** Batch 内采样时热门物品被采为负样本的概率高，模型会过度打压热门物品，破坏了原本的物品流行度分布。减去 $\log p$ 做重要性纠偏。
@@ -265,6 +267,29 @@ CTR、CVR、人均时长、留存（次留/7 留）、GMV、ARPU、人均消费�
 - **多模态内容理解**：短视频场景用视频/音频/文本的联合 Embedding 解决冷启动和内容同质化。
 - **端上重排**：把部分重排逻辑下放到客户端，利用实时反馈。
 - **全链路一致性**：召回-粗排-精排的联合训练/蒸馏。
+
+---
+
+## 延伸阅读
+
+- *Wide & Deep Learning for Recommender Systems*（Cheng et al., DLRS 2016）
+- *Factorization Machines*（Rendle, ICDM 2010）—— 二阶项化简公式的出处
+- *DeepFM*（Guo et al., IJCAI 2017）
+- *Deep & Cross Network v2*（Wang et al., WWW 2021）
+- *Deep Interest Network for Click-Through Rate Prediction*（Zhou et al., KDD 2018）—— DIN，注意力不做 softmax 的理由
+- *Deep Interest Evolution Network*（Zhou et al., AAAI 2019）—— DIEN
+- *Search-based User Interest Modeling*（Pi et al., CIKM 2020）—— SIM，超长行为序列
+- *Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts*（Ma et al., KDD 2018）—— MMoE
+- *Progressive Layered Extraction (PLE)*（Tang et al., RecSys 2020）—— 跷跷板效应
+- *Entire Space Multi-Task Model (ESMM)*（Ma et al., SIGIR 2018）—— 样本选择偏差与数据稀疏
+- *Deep Neural Networks for YouTube Recommendations*（Covington et al., RecSys 2016）
+- *Sampling-Bias-Corrected Neural Modeling for Large Corpus Item Recommendations*（Yi et al., RecSys 2019）—— LogQ 校正的出处
+- *PAL: a position-bias aware learning framework*（Guo et al., RecSys 2019）—— 位置偏置
+- *Practical Lessons from Predicting Clicks on Ads at Facebook*（He et al., ADKDD 2014）—— GBDT+LR、负采样后的概率校准公式
+- *Ad Click Prediction: a View from the Trenches*（McMahan et al., KDD 2013）—— FTRL 与工程经验
+- *Practical Diversified Recommendations with DPP*（Chen et al., NeurIPS 2018）
+- *Actions Speak Louder than Words (HSTU)*（Zhai et al., ICML 2024）—— 生成式推荐
+- *Recommender Systems with Generative Retrieval (TIGER)*（Rajput et al., NeurIPS 2023）
 
 ---
 

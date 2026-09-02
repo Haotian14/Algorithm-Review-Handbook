@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 频率 | 典型问法 |
 |---|---|---|
 | Self-Attention 原理 + 手写 | ★★★ | 为什么除以 $\sqrt{d_k}$ |
@@ -133,7 +135,7 @@ $2\times32\times32\times128\times4096\times2 \approx 2.1$ GB。**batch 一大就
 ### 3.4 推理系统优化
 
 - **Continuous Batching**（vLLM/TGI）：不等整个 batch 都生成完，某个序列结束就立刻换新请求进来，吞吐提升数倍。
-- **PagedAttention**：借鉴操作系统虚拟内存分页，把 KV Cache 分成固定大小 block 非连续存储，消除内存碎片，显存利用率从 ~40% 提到 >90%，还能让不同请求共享公共前缀（system prompt）。
+- **PagedAttention**：借鉴操作系统虚拟内存分页，把 KV Cache 分成固定大小 block 非连续存储，消除内存碎片，显存利用率从约 40% 提到 90% 以上〔vLLM, SOSP 2023〕，还能让不同请求共享公共前缀（system prompt）。
 - **投机解码（Speculative Decoding）**：小模型（draft）一次猜 $k$ 个 token，大模型一次前向并行验证，接受最长正确前缀。**输出分布与原模型严格一致**（靠拒绝采样保证），加速 2-3×。变体：Medusa（多头并行预测）、EAGLE（在特征层面做草稿）。
 - **Prefix Caching**：多轮对话/相同 system prompt 复用已算好的 KV。
 - **Chunked Prefill**：把长 prompt 切块与 decode 混合调度，平衡 TTFT 和吞吐。
@@ -150,7 +152,7 @@ $2\times32\times32\times128\times4096\times2 \approx 2.1$ GB。**batch 一大就
 
 **预训练**：自回归语言建模 $\max\sum\log P(x_t|x_{<t})$，万亿 token 级数据。关键在**数据**：去重（MinHash/SimHash）、质量过滤（分类器 + 规则 + 困惑度）、配比（代码/数学能提升推理能力）、去污染（防止测试集泄漏）。
 
-**SFT**：用 (instruction, response) 对做监督微调。**只对 response 部分计算 loss**（prompt 部分 mask 掉）—— 这是个高频细节考点。质量远比数量重要（LIMA：1000 条高质量数据即可）。
+**SFT**：用 (instruction, response) 对做监督微调。**只对 response 部分计算 loss**（prompt 部分 mask 掉）—— 这是个高频细节考点。质量远比数量重要 —— LIMA 用 1000 条高质量数据即达到可观的对齐效果〔LIMA, NeurIPS 2023〕。
 
 **对齐**：让模型输出符合人类偏好（有用、无害、诚实）。
 
@@ -213,7 +215,7 @@ $$W' = W_0 + \Delta W = W_0 + \frac{\alpha}{r}BA,\quad B\in\mathbb{R}^{d\times r
 $r$ 常取 8/16/32/64；任务与预训练差异越大、数据越多，$r$ 越大。$\alpha$ 常取 $2r$ 或 $16$，缩放因子 $\alpha/r$ 控制更新幅度（相当于 LoRA 分支的学习率）。
 
 **Q：LoRA 加在哪些模块？**
-原论文只加 $W_q, W_v$。实践表明**加到所有线性层（q,k,v,o + FFN 的 gate/up/down）效果最好**，QLoRA 论文验证了这一点。
+原论文只加 $W_q, W_v$。实践表明**加到所有线性层（q,k,v,o + FFN 的 gate/up/down）效果最好**〔QLoRA, NeurIPS 2023〕。
 
 **Q：LoRA 和全参微调的差距？**
 数据量小时接近甚至更好（正则效果）；数据量大或需要注入大量新知识时会落后。LoRA 更适合"学格式/风格/任务范式"，不适合"灌新知识"。
@@ -235,7 +237,7 @@ $r$ 常取 8/16/32/64；任务与预训练差异越大、数据越多，$r$ 越�
 
 ### 5.3 灾难性遗忘
 
-微调后通用能力下降。缓解：混入通用数据（经验比例 SFT 数据 : 通用数据 ≈ 1:1~1:5）、更小学习率、LoRA（限制参数改动范围）、正则化（L2-SP、EWC）、模型融合（把微调前后权重做加权平均）。
+微调后通用能力下降。缓解：混入通用数据（比例 SFT : 通用 ≈ 1:1~1:5，**经验值，需按任务实测**）、更小学习率、LoRA（限制参数改动范围）、正则化（L2-SP、EWC）、模型融合（把微调前后权重做加权平均）。
 
 ---
 
@@ -246,7 +248,7 @@ $r$ 常取 8/16/32/64；任务与预训练差异越大、数据越多，$r$ 越�
 | 方案 | 类型 | 说明 |
 |---|---|---|
 | **GPTQ** | PTQ，权重 4bit | 基于二阶信息逐层做误差补偿，快，精度好 |
-| **AWQ** | PTQ，权重 4bit | 发现 ~1% 的"显著权重"由激活幅度决定，对其按通道缩放保护，不做混合精度 |
+| **AWQ** | PTQ，权重 4bit | 发现约 1% 的「显著权重」由激活幅度决定〔AWQ, MLSys 2024〕，对其按通道缩放保护，不做混合精度 |
 | **SmoothQuant** | PTQ，W8A8 | 把激活的异常值难度"迁移"一部分到权重上，让两者都好量化 |
 | **LLM.int8()** | 混合精度 | 离群特征维度走 fp16，其余 int8 |
 | **QAT** | 训练时量化 | 效果最好但成本高 |
@@ -359,13 +361,57 @@ $r$ 常取 8/16/32/64；任务与预训练差异越大、数据越多，$r$ 越�
 
 ## 10. Scaling Law 与训练工程
 
-**Chinchilla 结论**：给定算力预算 $C\approx 6ND$（$N$ 参数量，$D$ 数据量 token 数），最优配比是 $D\approx 20N$。之前的模型（GPT-3）普遍**训练不足**。
+**Chinchilla 结论**：给定算力预算 $C\approx 6ND$（$N$ 参数量，$D$ 数据量 token 数），最优配比是 $D\approx 20N$〔Chinchilla, NeurIPS 2022〕。之前的模型（GPT-3）普遍**训练不足**。
 现在实践中因为推理成本占大头，会**远超 Chinchilla 最优**地喂数据（LLaMA-3 8B 用了 15T token，约 1800 tokens/param），换取小模型的高性能。
 
 **训练常见问题**：
 - **Loss spike**：梯度裁剪、降 lr、跳过坏 batch、回滚到之前的 checkpoint 换数据顺序继续、用 bf16 而非 fp16。
 - **数值精度**：bf16 动态范围与 fp32 相同（8 位指数），精度低但不易溢出，是大模型训练首选；fp16 需要 loss scaling。
 - 分布式并行策略见 [10 工程能力](10-engineering.md)。
+
+---
+
+## 延伸阅读
+
+> 本章是全书时效性最差的一章。以下论文是基础，但具体方案半年就会变，面试前请对一遍最新进展。
+
+**架构**
+- *Attention Is All You Need*（Vaswani et al., NeurIPS 2017）
+- *RoFormer: Enhanced Transformer with Rotary Position Embedding*（Su et al., 2021）—— RoPE
+- *YaRN: Efficient Context Window Extension of Large Language Models*（Peng et al., 2023）—— NTK 分段插值外推
+- *Train Short, Test Long: Attention with Linear Biases*（Press et al., ICLR 2022）—— ALiBi
+- *GLU Variants Improve Transformer*（Shazeer, 2020）—— SwiGLU
+- *Fast Transformer Decoding: One Write-Head is All You Need*（Shazeer, 2019）—— MQA
+- *GQA: Training Generalized Multi-Query Transformer Models*（Ainslie et al., EMNLP 2023）
+- *DeepSeek-V2 / DeepSeek-V3 技术报告*（2024）—— MLA、细粒度 MoE、无辅助损失负载均衡
+
+**推理**
+- *FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness*（Dao et al., NeurIPS 2022）
+- *Efficient Memory Management for Large Language Model Serving with PagedAttention*（Kwon et al., SOSP 2023）—— vLLM，显存利用率 40%→90% 的出处
+- *Fast Inference from Transformers via Speculative Decoding*（Leviathan et al., ICML 2023）
+
+**训练与对齐**
+- *Training language models to follow instructions with human feedback*（Ouyang et al., NeurIPS 2022）—— InstructGPT，RLHF 三步法
+- *Direct Preference Optimization*（Rafailov et al., NeurIPS 2023）—— DPO 的闭式解推导
+- *DeepSeekMath: Pushing the Limits of Mathematical Reasoning*（Shao et al., 2024）—— GRPO
+- *DeepSeek-R1*（2025）—— 可验证奖励的大规模 RL
+- *LIMA: Less Is More for Alignment*（Zhou et al., NeurIPS 2023）—— 「1000 条高质量 SFT 数据」结论的出处
+- *Training Compute-Optimal Large Language Models*（Hoffmann et al., NeurIPS 2022）—— Chinchilla，D≈20N
+
+**微调与压缩**
+- *LoRA: Low-Rank Adaptation of Large Language Models*（Hu et al., ICLR 2022）
+- *QLoRA: Efficient Finetuning of Quantized LLMs*（Dettmers et al., NeurIPS 2023）—— 也是「LoRA 加到所有线性层更好」的实验来源
+- *GPTQ: Accurate Post-Training Quantization*（Frantar et al., ICLR 2023）
+- *AWQ: Activation-aware Weight Quantization*（Lin et al., MLSys 2024）—— 「约 1% 显著权重」的出处
+- *SmoothQuant*（Xiao et al., ICML 2023）
+- *LLM.int8()*（Dettmers et al., NeurIPS 2022）—— 激活离群值现象
+
+**RAG 与评测**
+- *Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks*（Lewis et al., NeurIPS 2020）
+- *Precise Zero-Shot Dense Retrieval without Relevance Labels*（Gao et al., ACL 2023）—— HyDE
+- *Lost in the Middle: How Language Models Use Long Contexts*（Liu et al., TACL 2024）
+- *Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena*（Zheng et al., NeurIPS 2023）—— 位置偏见与长度偏见
+- *ReAct: Synergizing Reasoning and Acting in Language Models*（Yao et al., ICLR 2023）
 
 ---
 

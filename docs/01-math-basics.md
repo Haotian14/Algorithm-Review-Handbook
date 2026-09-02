@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 出现频率 | 常见问法 |
 |---|---|---|
 | 特征值/特征向量与 PCA | ★★★ | PCA 为什么要对协方差矩阵做特征分解？ |
@@ -178,6 +180,17 @@ $E_0 = 1 + \frac12 E_1 + \frac12 E_0$，$E_1 = 1 + \frac12\cdot 0 + \frac12 E_0$
 
 **Q7. 一根长度为 1 的棍子随机折两刀，能组成三角形的概率？**
 $1/4$。设断点 $x,y$，三角形条件要求每段 < 1/2，在单位正方形中画出可行域面积为 1/4。
+
+---
+
+## 延伸阅读
+
+> 未附链接：成稿环境无法联网核验，标题和年份均可直接搜索到原文。
+
+- *The Elements of Statistical Learning*（Hastie, Tibshirani, Friedman, 2009）—— 偏差方差分解、正则化的标准参考
+- *Pattern Recognition and Machine Learning*（Bishop, 2006）—— 概率视角的 MLE/MAP/贝叶斯
+- *Convex Optimization*（Boyd & Vandenberghe, 2004）—— 拉格朗日对偶与 KKT，第 5 章
+- *Trustworthy Online Controlled Experiments*（Kohavi, Tang, Xu, 2020）—— A/B 测试的样本量、多重检验与常见陷阱
 
 ---
 

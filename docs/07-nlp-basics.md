@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 频率 | 典型问法 |
 |---|---|---|
 | BPE / WordPiece / SentencePiece | ★★★ | 为什么用子词，中文怎么切 |
@@ -53,7 +55,7 @@
 **两种加速**（必问）：
 1. **层次 Softmax**：用 Huffman 树组织词表，把 $|V|$ 分类变成 $\log|V|$ 次二分类。高频词路径短。
 2. **负采样（Negative Sampling）**：把多分类改成二分类 —— 正样本是真实的 (中心词, 上下文词)，随机采 $k$ 个负样本，用 sigmoid 做二分类。
-   采样分布：$P(w)\propto f(w)^{3/4}$。**3/4 次方是为了适度提升低频词被采到的概率**（相对纯频率而言），同时又不至于像均匀分布那样过度采样噪声词。
+   采样分布：$P(w)\propto f(w)^{3/4}$〔Mikolov et al., NeurIPS 2013〕。**3/4 次方是为了适度提升低频词被采到的概率**（相对纯频率而言），同时又不至于像均匀分布那样过度采样噪声词。
 
 **Q：Word2Vec 的缺陷？** 静态词向量，一词一义 —— "苹果"在"吃苹果"和"苹果手机"中是同一个向量。这就是 ELMo/BERT 上下文相关表示的动机。
 
@@ -152,6 +154,24 @@ Softmax 逐位置独立分类，无法建模**标签之间的约束**，可能�
 
 - 表示型（双塔）vs 交互型（ESIM、BERT 交叉）。
 - 评价：Spearman 相关系数（STS 任务）、准确率。
+
+---
+
+## 延伸阅读
+
+- *Efficient Estimation of Word Representations in Vector Space*（Mikolov et al., ICLR 2013）与
+  *Distributed Representations of Words and Phrases*（Mikolov et al., NeurIPS 2013）—— 负采样与 3/4 次方的出处
+- *GloVe: Global Vectors for Word Representation*（Pennington et al., EMNLP 2014）
+- *Enriching Word Vectors with Subword Information*（Bojanowski et al., TACL 2017）—— FastText
+- *Long Short-Term Memory*（Hochreiter & Schmidhuber, 1997）
+- *Neural Machine Translation by Jointly Learning to Align and Translate*（Bahdanau et al., ICLR 2015）—— 注意力机制的源头
+- *Neural Machine Translation of Rare Words with Subword Units*（Sennrich et al., ACL 2016）—— BPE
+- *SentencePiece*（Kudo & Richardson, EMNLP 2018）与 *Subword Regularization*（Kudo, ACL 2018）—— Unigram LM
+- *BERT*（Devlin et al., NAACL 2019）—— 80/10/10 掩码策略
+- *RoBERTa*（Liu et al., 2019）/ *ALBERT*（Lan et al., ICLR 2020）/ *ELECTRA*（Clark et al., ICLR 2020）
+- *Sentence-BERT*（Reimers & Gurevych, EMNLP 2019）
+- *SimCSE: Simple Contrastive Learning of Sentence Embeddings*（Gao et al., EMNLP 2021）
+- *On the Sentence Embeddings from Pre-trained Language Models*（Li et al., EMNLP 2020）—— 各向异性问题
 
 ---
 

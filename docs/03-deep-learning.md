@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 频率 | 典型问法 |
 |---|---|---|
 | 反向传播推导 | ★★★ | 手推一个两层网络 |
@@ -38,7 +40,7 @@ $$\frac{\partial L}{\partial W_1}=\delta_1 x^T$$
 
 - 前向：构建计算图，缓存中间激活值（这是显存的大头）。
 - 反向：拓扑逆序累加梯度。
-- **梯度检查点（gradient checkpointing）**：不缓存全部激活，反向时重算，用 ~30% 的时间换 $O(\sqrt{n})$ 的显存。大模型训练必用。
+- **梯度检查点（gradient checkpointing）**：不缓存全部激活，反向时重算，用约 30% 的额外时间换 $O(\sqrt{n})$ 的显存〔Chen et al., 2016〕。大模型训练必用。
 
 ---
 
@@ -78,7 +80,7 @@ $$\frac{\partial L}{\partial W_1}=\delta_1 x^T$$
 
 $$\hat x = \frac{x-\mu_B}{\sqrt{\sigma_B^2+\epsilon}},\quad y=\gamma\hat x+\beta$$
 
-**作用**：① 缓解内部协变量偏移（原论文说法，后来被质疑）；② **真正的作用是让损失面更平滑（Lipschitz 常数更小），允许更大学习率**；③ 有轻微正则效果（batch 内的噪声）。
+**作用**：① 缓解内部协变量偏移（原论文说法，后来被质疑）；② **真正的作用是让损失面更平滑（Lipschitz 常数更小），允许更大学习率**〔Santurkar et al., NeurIPS 2018〕；③ 有轻微正则效果（batch 内的噪声）。
 
 **训练 vs 推理**：训练用当前 batch 统计量并用动量更新 running_mean/var；推理用 running 统计量。**这是 BN 最容易出 bug 的地方 —— 忘记 `model.eval()`**。
 
@@ -255,6 +257,25 @@ Max Pooling 保留最强响应（纹理），Average Pooling 保留整体（背�
 **Q：训练 loss 一直不降？** 欠拟合或有 bug：学习率太小、模型容量不够、特征无信息、优化器配置错误、数据没 shuffle。
 
 **Q：训练集和验证集 loss 都很低但线上效果差？** 分布偏移、数据泄漏、线上线下特征不一致（见 [02 §7.4](02-machine-learning.md)）。
+
+---
+
+## 延伸阅读
+
+- *Deep Learning*（Goodfellow, Bengio, Courville, 2016）—— 反向传播、正则化、优化的系统参考
+- *Batch Normalization*（Ioffe & Szegedy, ICML 2015）与 *How Does Batch Normalization Help Optimization?*（Santurkar et al., NeurIPS 2018）—— 后者推翻了「内部协变量偏移」的解释，改为损失面平滑
+- *Layer Normalization*（Ba, Kiros, Hinton, 2016）
+- *Root Mean Square Layer Normalization*（Zhang & Sennrich, NeurIPS 2019）—— RMSNorm
+- *Adam: A Method for Stochastic Optimization*（Kingma & Ba, ICLR 2015）
+- *Decoupled Weight Decay Regularization*（Loshchilov & Hutter, ICLR 2019）—— AdamW 与 Adam+L2 的区别
+- *Deep Residual Learning for Image Recognition*（He et al., CVPR 2016）—— 残差与退化问题
+- *Identity Mappings in Deep Residual Networks*（He et al., ECCV 2016）—— Pre-activation，Pre-LN 思路的来源
+- *On Layer Normalization in the Transformer Architecture*（Xiong et al., ICML 2020）—— Pre-LN 为什么可以不用 warmup
+- *Dropout: A Simple Way to Prevent Neural Networks from Overfitting*（Srivastava et al., JMLR 2014）
+- *Understanding the Disharmony between Dropout and Batch Normalization by Variance Shift*（Li et al., CVPR 2019）—— 方差偏移
+- *Delving Deep into Rectifiers*（He et al., ICCV 2015）—— He 初始化
+- *On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima*（Keskar et al., ICLR 2017）
+- *Accurate, Large Minibatch SGD*（Goyal et al., 2017）—— 学习率线性缩放与 warmup
 
 ---
 

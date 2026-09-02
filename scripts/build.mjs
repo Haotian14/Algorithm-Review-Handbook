@@ -14,20 +14,25 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DOCS = join(ROOT, 'docs');
 
 // ----------------------------------------------------------------- 章节元信息
+// vol: 内容时效性 —— slow 几年不变 / mid 一两年 / fast 半年就该复核
+const UPDATED = '2026-09';
+const VOL_LABEL = { slow: '慢', mid: '中', fast: '快' };
 const CHAPTERS = [
-  { id: '00-roadmap',            title: '复习路线图',     short: '路线图',   group: '开始',   desc: '考什么、怎么排期、常见误区' },
-  { id: '01-math-basics',        title: '数学与统计基础', short: '数学基础',  group: '基础',   desc: '线代、概率、优化、概率面试题' },
-  { id: '02-machine-learning',   title: '经典机器学习',   short: '机器学习', group: '基础',   desc: 'LR/SVM/树模型/评估指标/特征工程' },
-  { id: '03-deep-learning',      title: '深度学习基础',   short: '深度学习',  group: '基础',   desc: '反向传播/归一化/优化器/正则/调参' },
-  { id: '04-llm',                title: '大模型 LLM',     short: '大模型',   group: '方向',   desc: 'Transformer/RLHF/PEFT/推理加速/RAG' },
-  { id: '05-recsys-ads',         title: '推荐搜索广告',   short: '推搜广',   group: '方向',   desc: '召回粗排精排/CTR 演进/多目标/AB' },
-  { id: '06-cv-multimodal',      title: 'CV 与多模态',    short: 'CV',       group: '方向',   desc: '检测分割/ViT/扩散模型/CLIP/VLM' },
-  { id: '07-nlp-basics',         title: 'NLP 基础',       short: 'NLP',      group: '方向',   desc: '分词/词向量/RNN/BERT 系/语义检索' },
-  { id: '08-coding-leetcode',    title: '手撕：算法题',   short: '算法题',   group: '手撕',   desc: '模板 + DP 专题 + 高频题单' },
-  { id: '09-coding-ml-scratch',  title: '手撕：ML 组件',  short: 'ML 组件',   group: '手撕',   desc: 'attention/AUC/NMS/KMeans 可运行实现' },
-  { id: '10-engineering',        title: '工程能力',       short: '工程',     group: '进阶',   desc: '显存/混合精度/分布式/部署' },
-  { id: '11-project-behavioral', title: '项目与行为面',   short: '项目面',   group: '进阶',   desc: '项目深挖套路/STAR/反问/简历' },
-  { id: '12-question-bank',      title: '高频题库',       short: '题库',      group: '进阶',   desc: '130 道自测题，支持随机抽查' },
+  { id: '00-roadmap',            title: '复习路线图',     short: '路线图',   group: '开始',   vol: 'mid',   desc: '考什么、怎么排期、常见误区' },
+  { id: '01-math-basics',        title: '数学与统计基础', short: '数学基础',  group: '基础',   vol: 'slow',  desc: '线代、概率、优化、概率面试题' },
+  { id: '02-machine-learning',   title: '经典机器学习',   short: '机器学习', group: '基础',   vol: 'slow',  desc: 'LR/SVM/树模型/评估指标/特征工程' },
+  { id: '03-deep-learning',      title: '深度学习基础',   short: '深度学习',  group: '基础',   vol: 'slow',  desc: '反向传播/归一化/优化器/正则/调参' },
+  { id: '04-llm',                title: '大模型 LLM',     short: '大模型',   group: '方向',   vol: 'fast',  desc: 'Transformer/RLHF/PEFT/推理加速/RAG' },
+  { id: '05-recsys-ads',         title: '推荐搜索广告',   short: '推搜广',   group: '方向',   vol: 'mid',   desc: '召回粗排精排/CTR 演进/多目标/AB' },
+  { id: '06-cv-multimodal',      title: 'CV 与多模态',    short: 'CV',       group: '方向',   vol: 'mid',   desc: '检测分割/ViT/扩散模型/CLIP/VLM' },
+  { id: '07-nlp-basics',         title: 'NLP 基础',       short: 'NLP',      group: '方向',   vol: 'slow',  desc: '分词/词向量/RNN/BERT 系/语义检索' },
+  { id: '08-coding-leetcode',    title: '手撕：算法题',   short: '算法题',   group: '手撕',   vol: 'slow',  desc: '模板 + DP 专题 + 高频题单' },
+  { id: '09-coding-ml-scratch',  title: '手撕：ML 组件',  short: 'ML 组件',   group: '手撕',   vol: 'slow',  desc: 'attention/AUC/NMS/KMeans 可运行实现' },
+  { id: '10-engineering',        title: '工程能力',       short: '工程',     group: '进阶',   vol: 'mid',   desc: '显存/混合精度/分布式/部署' },
+  { id: '13-system-design',      title: '算法系统设计',   short: '系统设计', group: '进阶',   vol: 'mid',   desc: '推荐/RAG 系统设计、指标体系、容量估算' },
+  { id: '14-sql-bigdata',        title: 'SQL 与大数据',   short: 'SQL',      group: '进阶',   vol: 'slow',  desc: '窗口函数/留存漏斗/数据倾斜/Spark/Flink' },
+  { id: '11-project-behavioral', title: '项目与行为面',   short: '项目面',   group: '进阶',   vol: 'slow',  desc: '项目深挖套路/STAR/反问/简历' },
+  { id: '12-question-bank',      title: '高频题库',       short: '题库',      group: '进阶',   vol: 'mid',   desc: '自测题库，支持随机抽查' },
 ];
 
 // ----------------------------------------------------- 1. 生成 12-question-bank.md
@@ -72,7 +77,8 @@ for (const c of CHAPTERS) {
 
 const chapters = CHAPTERS.map((c) => {
   const body = readFileSync(join(DOCS, `${c.id}.md`), 'utf8');
-  return { ...c, body, words: body.replace(/\s/g, '').length };
+  return { ...c, body, updated: UPDATED, volLabel: VOL_LABEL[c.vol],
+           words: body.replace(/\s/g, '').length };
 });
 
 const out =

@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 频率 | 典型问法 |
 |---|---|---|
 | PyTorch 训练循环细节 | ★★★ | zero_grad 忘了会怎样 |
@@ -212,6 +214,19 @@ def set_seed(seed):
 | checkpoint 存什么 | model.state_dict + optimizer.state_dict + scheduler + epoch/step + scaler + 随机数状态 |
 | 学习率和 batch size 的关系 | 线性缩放法则：batch 扩大 $k$ 倍，lr 也扩大 $k$ 倍，并配合 warmup |
 | 为什么大模型训练用 bf16 | 动态范围等同 fp32，不需要 loss scaling，训练更稳 |
+
+---
+
+## 延伸阅读
+
+- *Mixed Precision Training*（Micikevicius et al., ICLR 2018）—— fp32 主权重与 loss scaling
+- *ZeRO: Memory Optimizations Toward Training Trillion Parameter Models*（Rajbhandari et al., SC 2020）—— 三个阶段的显存/通信表
+- *ZeRO-Offload*（Ren et al., ATC 2021）
+- *PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel*（Zhao et al., VLDB 2023）
+- *Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism*（Shoeybi et al., 2019）—— 张量并行的切分方式
+- *GPipe*（Huang et al., NeurIPS 2019）与 *Efficient Large-Scale Language Model Training on GPU Clusters*（Narayanan et al., SC 2021）—— 流水线 bubble 与 1F1B
+- *Training Deep Nets with Sublinear Memory Cost*（Chen et al., 2016）—— 梯度检查点，O(√n) 显存与约 30% 额外时间的出处
+- *PyTorch Distributed: Experiences on Accelerating Data Parallel Training*（Li et al., VLDB 2020）—— DDP 的梯度分桶与通信重叠
 
 ---
 

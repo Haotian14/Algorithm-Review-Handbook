@@ -4,6 +4,8 @@
 
 ## 本章高频考点
 
+> 星级是**主观判断**，反映常见面经里的印象分布，不是统计数据。用来排复习优先级即可。
+
 | 考点 | 频率 | 典型问法 |
 |---|---|---|
 | LR 推导 + 为什么用交叉熵不用 MSE | ★★★ | 完整推导梯度 |
@@ -289,7 +291,7 @@ MSE（对异常值敏感）、MAE（鲁棒但不可导于 0）、RMSE、Huber（
 3. **阈值层面**：不用 0.5，用 PR 曲线找最优阈值；或做概率校准。
 4. **指标层面**：别看 accuracy，看 PR-AUC / F1 / 召回@固定精度。
 
-**追问**："采样后概率会失真吗？" 会。负采样率为 $r$ 时，需要校准：$p = \frac{p'}{p'+(1-p')/r}$。广告 CTR 场景必做。
+**追问**："采样后概率会失真吗？" 会。负采样率为 $r$ 时，需要校准：$p = \frac{p'}{p'+(1-p')/r}$〔Facebook, ADKDD 2014〕。广告 CTR 场景必做。
 
 ### 7.3 数据泄漏（Data Leakage）
 
@@ -299,6 +301,19 @@ MSE（对异常值敏感）、MAE（鲁棒但不可导于 0）、RMSE、Huber（
 
 原因：特征穿越（离线用了线上取不到的未来特征）、训练与推理的特征计算逻辑不一致（**特征工程代码应共用一套**）、样本分布漂移、延迟反馈（转化回流晚导致标签不准）。
 排查方法：对同一批请求 dump 线上特征与离线特征做逐字段 diff。
+
+---
+
+## 延伸阅读
+
+- *XGBoost: A Scalable Tree Boosting System*（Chen & Guestrin, KDD 2016）—— 二阶泰勒展开、结构分数、分裂增益公式的原始出处
+- *LightGBM: A Highly Efficient Gradient Boosting Decision Tree*（Ke et al., NeurIPS 2017）—— GOSS 与 EFB
+- *CatBoost: unbiased boosting with categorical features*（Prokhorenkova et al., NeurIPS 2018）—— Ordered Target Statistics 如何避免目标泄漏
+- *Greedy Function Approximation: A Gradient Boosting Machine*（Friedman, 2001）—— GBDT 原始论文
+- *Random Forests*（Breiman, 2001）—— 两重随机性与 OOB
+- *SMOTE: Synthetic Minority Over-sampling Technique*（Chawla et al., 2002）
+- *The Relationship Between Precision-Recall and ROC Curves*（Davis & Goadrich, ICML 2006）—— 不平衡数据下该看 PR 还是 ROC
+- *A Unified Approach to Interpreting Model Predictions*（Lundberg & Lee, NeurIPS 2017）—— SHAP
 
 ---
 
