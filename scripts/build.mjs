@@ -1,6 +1,6 @@
 /**
  * 构建脚本（零依赖）：
- *   1. 根据 data/questions.json 生成 docs/14-question-bank.md
+ *   1. 根据 data/questions.json 生成 docs/16-question-bank.md
  *   2. 把 docs/*.md 全部打包成 site/assets/content.js，供静态站点直接使用
  *      （打包成 JS 而不是 fetch markdown，是为了让站点在 file:// 下也能打开）
  *
@@ -32,15 +32,17 @@ const CHAPTERS = [
   { id: '11-system-design',      title: '算法系统设计',   short: '系统设计', group: '进阶',   vol: 'mid',   desc: '推荐/RAG 系统设计、指标体系、容量估算' },
   { id: '12-sql-bigdata',        title: 'SQL 与大数据',   short: 'SQL',      group: '进阶',   vol: 'slow',  desc: '窗口函数/留存漏斗/数据倾斜/Spark/Flink' },
   { id: '13-project-behavioral', title: '项目与行为面',   short: '项目面',   group: '进阶',   vol: 'slow',  desc: '项目深挖套路/STAR/反问/简历' },
-  { id: '14-question-bank',      title: '高频题库',       short: '题库',      group: '进阶',   vol: 'mid',   desc: '自测题库，支持随机抽查' },
+  { id: '14-causal-uplift',      title: '因果推断与 Uplift', short: '因果推断', group: '进阶', vol: 'slow', desc: 'ATE/CATE、Uplift 四象限、Qini、观测数据去偏' },
+  { id: '15-rl-basics',          title: '强化学习基础',   short: '强化学习', group: '进阶',   vol: 'mid',   desc: 'MDP/DQN/策略梯度/PPO/GAE，RLHF 的前置' },
+  { id: '16-question-bank',      title: '高频题库',       short: '题库',      group: '进阶',   vol: 'mid',   desc: '自测题库，支持随机抽查' },
 ];
 
-// ----------------------------------------------------- 1. 生成 14-question-bank.md
+// ----------------------------------------------------- 1. 生成 16-question-bank.md
 const bank = JSON.parse(readFileSync(join(ROOT, 'data', 'questions.json'), 'utf8'));
 const catName = Object.fromEntries(bank.categories.map((c) => [c.id, c]));
 const stars = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
 
-let md = `# 14 · 高频题库
+let md = `# 16 · 高频题库
 
 > 共 **${bank.questions.length}** 道题，按方向分组。**先盖住答案自己说一遍，再对照要点。**
 > 网页版支持随机抽题、按方向/难度筛选和掌握度追踪 —— 用那个刷效率更高。
@@ -62,7 +64,7 @@ for (const cat of bank.categories) {
     md += `### ${i + 1}. ${q.q}\n\n\`${stars(q.l)}\`  ${q.a}\n\n`;
   });
 }
-writeFileSync(join(DOCS, '14-question-bank.md'), md);
+writeFileSync(join(DOCS, '16-question-bank.md'), md);
 
 // -------------------------------------------------- 2. 打包 markdown 到 content.js
 const files = readdirSync(DOCS).filter((f) => f.endsWith('.md'));
@@ -89,5 +91,5 @@ const out =
 writeFileSync(join(ROOT, 'site', 'assets', 'content.js'), out);
 
 const total = chapters.reduce((s, c) => s + c.words, 0);
-console.log(`✓ docs/14-question-bank.md  (${bank.questions.length} 题)`);
+console.log(`✓ docs/16-question-bank.md  (${bank.questions.length} 题)`);
 console.log(`✓ site/assets/content.js    (${chapters.length} 章 / 约 ${(total / 1000).toFixed(1)}k 字 / ${(out.length / 1024).toFixed(0)} KB)`);

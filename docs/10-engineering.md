@@ -17,6 +17,7 @@
 | Dataset / DataLoader | ★★ | num_workers 怎么设 |
 | 推理部署 | ★★ | ONNX / TensorRT / vLLM |
 | 实验管理与复现 | ★★ | 怎么保证可复现 |
+| 隐私与合规 | ★★ | 差分隐私是什么，联邦学习的难点 |
 
 ---
 
@@ -217,6 +218,53 @@ def set_seed(seed):
 
 ---
 
+## 9. 数据隐私与合规
+
+**为什么算法岗要懂这个**：推荐、广告、风控用的都是个人数据，国内《个人信息保护法》、欧盟 GDPR 都是硬约束。
+很多方案不是技术上做不到，而是**合规上不允许**，这直接决定架构选型。
+
+### 9.1 差分隐私（DP）
+
+**定义**：随机算法 $M$ 满足 $(\epsilon,\delta)$-DP，若对任意只差一条记录的相邻数据集 $D,D'$ 和任意输出集合 $S$：
+$$\Pr[M(D)\in S]\le e^{\epsilon}\Pr[M(D')\in S]+\delta$$
+
+直觉：**看到输出也几乎无法判断某个人在不在数据集里**。$\epsilon$ 越小隐私越强、效用越差，是可量化的"隐私预算"。
+
+**DP-SGD**（把 DP 用到训练上）两步：
+1. **逐样本梯度裁剪**到范数 $C$ —— 限制单条样本能造成的最大影响（这是能给出保证的关键）。
+2. 聚合后**加高斯噪声** $\mathcal{N}(0,\sigma^2C^2I)$，再更新。
+
+代价：要算逐样本梯度（慢、费显存），且噪声会掉点，**长尾群体掉得最多**（它们本来就靠少数样本）。
+
+### 9.2 联邦学习
+
+**核心**：数据不出端，只传模型更新。**FedAvg**：各客户端用本地数据训练若干步 → 上传参数（或增量）→ 服务端按样本数加权平均 → 下发新模型，循环。
+
+**四个真实难点（面试问的就是这些）**：
+- **数据非 IID**：每个用户的数据分布差别很大，本地多步训练会让各端模型互相跑偏，聚合后效果下降。
+- **通信是瓶颈**：不是算力，是上下行带宽 → 梯度压缩、量化、稀疏化、降低通信轮次。
+- **掉队者（stragglers）**：设备性能和在线时间参差不齐 → 异步聚合或按比例采样客户端。
+- **只传梯度也可能泄漏**：已有从梯度反推原始样本的攻击 → 需要配合**安全聚合**（服务端只能看到求和结果，看不到单个客户端的更新）或叠加 DP。
+
+**横向 vs 纵向**：
+- **横向**：各方**特征相同、样本不同**（不同地区的同类用户）——手机输入法预测是典型。
+- **纵向**：各方**样本重叠、特征不同**（广告主有转化数据，平台有行为特征）——需要先做隐私求交（PSI）对齐用户，再联合建模。**这在广告归因里是真实需求。**
+
+### 9.3 其他手段与工程现实
+
+| 手段 | 说明 |
+|---|---|
+| 匿名化 / k-匿名 | 最基础，但**易被重识别**（结合外部数据集就能反查），不能作为唯一防线 |
+| 安全多方计算 MPC | 密码学保证，能算但慢几个数量级，用在小规模关键计算（如 PSI） |
+| 可信执行环境 TEE | 硬件隔离，性能损失小，但要信任硬件厂商 |
+| 端上推理 | 数据根本不上传，代价是模型必须小 |
+
+**工程现实**：多数团队真正落地的是"最小化收集 + 脱敏 + 权限管控 + 审计"这套朴素方案，
+DP 和联邦学习只用在特定场景。**面试时能说出"合规要求决定了架构，而不是反过来"，比堆术语更有说服力。**
+
+
+---
+
 ## 延伸阅读
 
 - *Mixed Precision Training*（Micikevicius et al., ICLR 2018）—— fp32 主权重与 loss scaling
@@ -227,6 +275,9 @@ def set_seed(seed):
 - *GPipe*（Huang et al., NeurIPS 2019）与 *Efficient Large-Scale Language Model Training on GPU Clusters*（Narayanan et al., SC 2021）—— 流水线 bubble 与 1F1B
 - *Training Deep Nets with Sublinear Memory Cost*（Chen et al., 2016）—— 梯度检查点，O(√n) 显存与约 30% 额外时间的出处
 - *PyTorch Distributed: Experiences on Accelerating Data Parallel Training*（Li et al., VLDB 2020）—— DDP 的梯度分桶与通信重叠
+- *Deep Learning with Differential Privacy*（Abadi et al., CCS 2016）—— DP-SGD 的裁剪与加噪
+- *Communication-Efficient Learning of Deep Networks from Decentralized Data*（McMahan et al., AISTATS 2017）—— FedAvg
+- *Advances and Open Problems in Federated Learning*（Kairouz et al., 2021）—— 非 IID、通信、安全聚合的系统梳理
 
 ---
 
@@ -241,3 +292,6 @@ def set_seed(seed):
 - [ ] 能区分 TP / PP / SP / EP 及其部署位置
 - [ ] 有一套 GPU 利用率低的排查流程
 - [ ] 能说出 LLM 推理服务的关键指标和延迟/吞吐的矛盾
+- [ ] 能写出差分隐私的定义式，说清 DP-SGD 的裁剪和加噪各起什么作用
+- [ ] 能讲 FedAvg 流程和联邦学习的四个难点
+- [ ] 能区分横向与纵向联邦，并举出纵向联邦的真实场景

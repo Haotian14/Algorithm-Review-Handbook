@@ -18,6 +18,7 @@
 | 多模态大模型（LLaVA/Qwen-VL） | ★★★ | 图像 token 怎么接进 LLM |
 | 分割 | ★★ | 语义/实例/全景的区别 |
 | 数据增强 | ★★ | 常见增强及其作用 |
+| 对抗样本与鲁棒性 | ★★ | FGSM/PGD、对抗训练、为什么会存在 |
 
 ---
 
@@ -212,6 +213,43 @@ $$L=\frac12\left[\text{CE}(\text{logits}, \text{arange}(N)) + \text{CE}(\text{lo
 
 ---
 
+## 8. 对抗样本与鲁棒性
+
+**现象**：给图片加上人眼看不出的微小扰动（通常约束 $\|\delta\|_\infty\le\epsilon$，如 $8/255$），
+分类器就以高置信度给出完全错误的类别。这不是个别 bug，是深度模型的**系统性脆弱**。
+
+**FGSM（一步攻击）**：沿损失对输入的梯度方向走一步
+$$x'=x+\epsilon\cdot\text{sign}(\nabla_x L(f(x),y))$$
+
+**PGD（多步，最强的一阶攻击）**：小步长多次迭代，每步投影回 $\epsilon$-球内
+$$x^{t+1}=\Pi_{\|x'-x\|_\infty\le\epsilon}\left(x^{t}+\alpha\cdot\text{sign}(\nabla_x L)\right)$$
+随机起点 + 多次重启能进一步增强。**评测防御方法时必须用 PGD 而不是 FGSM**，否则容易得出虚假的鲁棒性。
+
+**Q：为什么会存在对抗样本？**
+两种主流解释：① **局部线性假设**〔Goodfellow et al., ICLR 2015〕—— 高维空间中即使每维扰动极小，
+沿梯度方向的累积效应也足以翻转 logits；② **非鲁棒特征**〔Ilyas et al., NeurIPS 2019〕—— 数据里本就存在
+人类看不见但**真实可泛化**的高频统计特征，模型合理地利用了它们，攻击正是在操纵这些特征。
+第二种解释更被接受：**对抗样本是特征，不是 bug。**
+
+**防御**：
+
+| 方法 | 说明 |
+|---|---|
+| **对抗训练** | 训练时就用 PGD 生成的对抗样本，本质是 min-max 优化 $\min_\theta\mathbb{E}\max_{\|\delta\|\le\epsilon}L$〔Madry et al., ICLR 2018〕。**目前唯一被广泛验证有效的方法**，代价是训练慢几倍、干净样本准确率下降 |
+| 随机平滑 | 加高斯噪声后多次投票，能给出**可证明的**鲁棒半径，但半径小、推理贵 |
+| 输入变换/去噪 | JPEG 压缩、随机缩放等。**大多在自适应攻击下失效** —— 只是让梯度不好算（梯度混淆），不是真鲁棒 |
+
+**Q：鲁棒性和准确率有冲突吗？** 有。对抗训练通常会掉几个点的干净准确率，
+因为它强迫模型放弃那些"有用但不鲁棒"的特征。这是一个**要按场景取舍**的 trade-off，不是纯粹的改进。
+
+**业务里的"对抗"往往更土也更常见**：内容审核场景中，对手不是在算梯度，
+而是在图上加噪点、拉伸变形、把违规文字写成变体字或嵌进图片。
+防御靠的是**数据增强覆盖已知变体 + 快速迭代的对抗闭环（人审产出新标签回流训练）**，
+而不是学术的 PGD 对抗训练。**面试答这题时能区分"学术对抗"和"业务对抗"是加分项。**
+
+
+---
+
 ## 延伸阅读
 
 - *Deep Residual Learning*（He et al., CVPR 2016）/ *Densely Connected Convolutional Networks*（Huang et al., CVPR 2017）
@@ -235,6 +273,9 @@ $$L=\frac12\left[\text{CE}(\text{logits}, \text{arange}(N)) + \text{CE}(\text{lo
 - *Visual Instruction Tuning*（Liu et al., NeurIPS 2023）—— LLaVA 两阶段训练
 - *BLIP-2*（Li et al., ICML 2023）—— Q-Former
 - *Evaluating Object Hallucination in Large Vision-Language Models*（Li et al., EMNLP 2023）—— POPE
+- *Explaining and Harnessing Adversarial Examples*（Goodfellow et al., ICLR 2015）—— FGSM 与线性假设
+- *Towards Deep Learning Models Resistant to Adversarial Attacks*（Madry et al., ICLR 2018）—— PGD 与对抗训练的 min-max 框架
+- *Adversarial Examples Are Not Bugs, They Are Features*（Ilyas et al., NeurIPS 2019）—— 非鲁棒特征
 
 ---
 
@@ -250,3 +291,5 @@ $$L=\frac12\left[\text{CE}(\text{logits}, \text{arange}(N)) + \text{CE}(\text{lo
 - [ ] 能解释 Latent Diffusion 和 CFG
 - [ ] 能讲 CLIP 的对比学习目标和零样本流程
 - [ ] 能讲 LLaVA 的两阶段训练和图像 token 过多的解法
+- [ ] 能写 FGSM/PGD，并说清为什么评测防御要用 PGD
+- [ ] 能解释对抗样本的"非鲁棒特征"视角和鲁棒性-准确率的取舍
