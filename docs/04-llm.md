@@ -66,8 +66,9 @@ FFN：$\text{FFN}(x)=W_2\,\text{act}(W_1x)$，隐层维度通常 $4d$。LLaMA �
 
 **Q：为什么现在大模型都是 Decoder-only？（高频）**
 1. **训练效率高**：每个位置都能当作预测目标，一次前向产生 $n$ 个训练信号；Encoder-Decoder 结构复杂，MLM 只有 15% 的位置贡献损失。
-2. **零样本泛化更好**：实验（如 Google 的 architecture 对比）表明纯 LM 目标的 Decoder-only 在无微调时表现最好。
-3. **注意力矩阵满秩**：因果 mask 使注意力矩阵为下三角，是满秩的，理论表达能力更强；双向注意力矩阵可能低秩。
+2. **零样本泛化更好**：大规模架构对比实验表明，纯 LM 目标的 Decoder-only 在无微调时零样本表现最好〔Wang et al., *What Language Model Architecture and Pretraining Objective Work Best for Zero-Shot Generalization?*, ICML 2022〕。
+3. **注意力矩阵满秩**（理论论证，非定论）：因果 mask 让注意力矩阵成为对角元为正的下三角阵，因而满秩；双向注意力矩阵则可能低秩，表达能力受限。
+   这条常被复述，但它是对**单层注意力**的分析，能不能推广到深层网络的实际表达能力仍有争议 —— 面试时可以提，但别当成铁律，理由 1、2、4 更站得住。
 4. **工程简单**：结构统一，方便 scale、方便 KV Cache 复用、方便做 in-context learning。
 5. 生成任务天然统一：所有任务都可以转成 "prompt → continuation"。
 

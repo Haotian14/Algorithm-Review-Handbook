@@ -222,6 +222,7 @@ $y = x + F(x)$，则 $\frac{\partial y}{\partial x}=I+\frac{\partial F}{\partial
 
 - **参数量**：$k\times k\times C_{in}\times C_{out} + C_{out}$
 - **FLOPs**：$\approx 2\times k^2\times C_{in}\times C_{out}\times H_{out}\times W_{out}$
+  （这里把一次乘加算作 2 次浮点运算。**很多论文报的是 MACs / MAdds，不乘这个 2**，相差一倍 —— 面试报数字时先说清用的是哪种口径）
 - **输出尺寸**：$H_{out}=\lfloor\frac{H+2p-k}{s}\rfloor+1$
 - **感受野**：$RF_l = RF_{l-1} + (k_l-1)\prod_{i<l}s_i$
 

@@ -135,6 +135,29 @@ def auc_score(y_true, y_score):
     return (ranks[y_true == 1].sum() - M * (M + 1) / 2.0) / (M * N)
 
 
+def gauc(y_true, y_score, user_ids):
+    """按用户分组算 AUC 再加权平均。
+
+    推荐场景下跨用户比较分数没有意义 —— 模型只要学会「活跃用户点得多」
+    就能拿到高全局 AUC，但用户内部排序可能很差。
+    权重用曝光数（DIN 原文口径）；组内只有单一类别时该组无定义，必须跳过。
+    """
+    from collections import defaultdict
+    groups = defaultdict(lambda: ([], []))
+    for u, y, s in zip(user_ids, y_true, y_score):
+        groups[u][0].append(y)
+        groups[u][1].append(s)
+    total, total_w = 0.0, 0.0
+    for ys, ss in groups.values():
+        a = auc_score(ys, ss)
+        if np.isnan(a):                 # 组内单一类别，跳过
+            continue
+        w = len(ys)                     # 曝光数加权
+        total += a * w
+        total_w += w
+    return total / total_w if total_w else float("nan")
+
+
 def iou(box_a, box_b):
     """两个框的 IoU，格式 (x1, y1, x2, y2)。"""
     x1 = max(box_a[0], box_b[0])
@@ -284,6 +307,17 @@ def _test():
     assert auc_score([0, 0, 1, 1], [0.1, 0.2, 0.8, 0.9]) == 1.0
     assert auc_score([0, 1, 0, 1], [0.5, 0.5, 0.5, 0.5]) == 0.5
     assert abs(auc_score([0, 1, 1, 0], [0.1, 0.4, 0.35, 0.8]) - 0.5) < 1e-9
+
+    # GAUC：全局 AUC 不低，但每个用户组内的排序都是错的
+    # 用户 a 打分整体高、正样本多；用户 b 打分整体低、正样本少
+    # 组内负样本的分数都压过正样本 => 两组 AUC 都是 0
+    yt = [1, 1, 1, 0] + [1, 0, 0, 0]
+    ys_ = [0.90, 0.85, 0.80, 0.95] + [0.20, 0.35, 0.30, 0.25]
+    uid = ['a'] * 4 + ['b'] * 4
+    assert auc_score(yt, ys_) == 9 / 16      # 全局 0.5625，看着还行
+    assert gauc(yt, ys_, uid) == 0.0         # 组内全错，GAUC 才暴露问题
+    # 只有单一类别的组必须被跳过，而不是记 0 拉低结果
+    assert gauc([1, 0, 1], [0.9, 0.1, 0.5], ['a', 'a', 'b']) == 1.0
 
     # IoU / NMS
     assert abs(iou((0, 0, 2, 2), (1, 1, 3, 3)) - 1 / 7) < 1e-9

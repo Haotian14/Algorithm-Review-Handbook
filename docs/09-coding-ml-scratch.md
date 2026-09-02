@@ -188,9 +188,21 @@ def auc_score(y_true, y_score):
 **面试的两个坑**：① **并列分数必须取平均秩**，否则结果不对（大部分人写的版本会在这里挂）；② 单类样本时 AUC 无定义，要处理。
 
 **GAUC（推荐场景，常追问）**：
+
+一个能说明它为什么必要的反例 —— 用户 a 打分整体高、正样本多，用户 b 打分整体低、正样本少，
+两组**组内**的负样本分数都压过正样本：
+
+| 用户 | label | score |
+|---|---|---|
+| a | 1, 1, 1, 0 | 0.90, 0.85, 0.80, **0.95** |
+| b | 1, 0, 0, 0 | 0.20, **0.35, 0.30, 0.25** |
+
+全局 AUC = 9/16 ≈ **0.56**，看着还行；但两组的组内 AUC 都是 0，**GAUC = 0**。
+模型学到的只是「a 这类用户分数高」，对同一个用户该推哪条完全排反了 —— 这正是线上体验崩掉而离线 AUC 不报警的典型形态。
+
 ```python
 def gauc(y_true, y_score, user_ids):
-    """按用户分组算 AUC，用各组正样本数加权平均。"""
+    """按用户分组算 AUC 再加权平均。组内只有单一类别时该组无定义，必须跳过而不是记 0。"""
     from collections import defaultdict
     groups = defaultdict(lambda: ([], []))
     for u, y, s in zip(user_ids, y_true, y_score):
@@ -200,7 +212,7 @@ def gauc(y_true, y_score, user_ids):
         a = auc_score(ys, ss)
         if np.isnan(a):          # 组内只有一类，跳过
             continue
-        w = sum(ys)              # 也可用曝光数当权重
+        w = len(ys)              # 曝光数加权（DIN 原文口径）；也有用点击数 sum(ys) 的
         total += a * w; total_w += w
     return total / total_w if total_w else float("nan")
 ```
