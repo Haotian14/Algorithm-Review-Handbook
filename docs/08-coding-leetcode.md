@@ -303,7 +303,7 @@ class LRUCache:
             self.cache.popitem(last=False)
 ```
 
-⚠️ 面试官常要求**手写双向链表 + 哈希表**版本，不许用 OrderedDict。核心：哈希表存 key → 节点，双向链表维护顺序，用虚拟头尾节点简化边界。
+**注意**：面试官常要求**手写双向链表 + 哈希表**版本，不许用 OrderedDict。核心：哈希表存 key → 节点，双向链表维护顺序，用虚拟头尾节点简化边界。
 
 ---
 
@@ -383,7 +383,7 @@ def length_of_lis(nums):
     return len(tails)
 ```
 
-⚠️ `tails` 本身**不是**某个真实的最长上升子序列，只是长度对应的最小结尾数组。
+**注意**：`tails` 本身**不是**某个真实的最长上升子序列，只是长度对应的最小结尾数组。
 
 ---
 
@@ -470,7 +470,7 @@ math.inf / -math.inf                  # 边界初始化
 sorted(items, key=lambda x: (-x[1], x[0]))   # 多级排序
 ```
 
-⚠️ 注意：`heapq` 是小顶堆，求最大值时取负数入堆；递归深度默认 1000，深递归要 `sys.setrecursionlimit`。
+**注意**：`heapq` 是小顶堆，求最大值时取负数入堆；递归深度默认 1000，深递归要 `sys.setrecursionlimit`。
 
 ---
 

@@ -191,9 +191,8 @@ function viewHome() {
         ${g.items.map(c => `
           <a class="card${done.has(c.id) ? ' done' : ''}" href="#/c/${c.id}">
             <div class="card-top">
-              <span class="card-icon">${c.icon}</span>
+              <span class="card-idx">${c.id.slice(0, 2)}</span>
               <b>${esc(c.title)}</b>
-              <span class="card-num">${c.id.slice(0, 2)}</span>
             </div>
             <p>${esc(c.desc)}</p>
             <div class="card-foot">

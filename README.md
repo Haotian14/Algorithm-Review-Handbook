@@ -4,7 +4,7 @@
 
 **13 章系统笔记 · 130 道高频自测题 · 可运行的手撕代码**
 
-> 🌐 **在线阅读**：https://haotian14.github.io/Algorithm-Review-Handbook/
+> **在线阅读**：https://haotian14.github.io/Algorithm-Review-Handbook/
 
 ---
 

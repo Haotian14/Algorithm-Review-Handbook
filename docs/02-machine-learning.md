@@ -268,7 +268,7 @@ MSE（对异常值敏感）、MAE（鲁棒但不可导于 0）、RMSE、Huber（
 - **Wrapper**：递归特征消除（RFE）。准但慢。
 - **Embedded**：L1 正则、树模型的 feature importance、SHAP。实用首选。
 
-⚠️ 树模型的默认 feature_importance（基于分裂增益）**偏向高基数特征**，更可靠的是 permutation importance 或 SHAP。
+**注意**：树模型的默认 feature_importance（基于分裂增益）**偏向高基数特征**，更可靠的是 permutation importance 或 SHAP。
 
 ---
 
@@ -289,7 +289,7 @@ MSE（对异常值敏感）、MAE（鲁棒但不可导于 0）、RMSE、Huber（
 3. **阈值层面**：不用 0.5，用 PR 曲线找最优阈值；或做概率校准。
 4. **指标层面**：别看 accuracy，看 PR-AUC / F1 / 召回@固定精度。
 
-⚠️ 追问："采样后概率会失真吗？" 会。负采样率为 $r$ 时，需要校准：$p = \frac{p'}{p'+(1-p')/r}$。广告 CTR 场景必做。
+**追问**："采样后概率会失真吗？" 会。负采样率为 $r$ 时，需要校准：$p = \frac{p'}{p'+(1-p')/r}$。广告 CTR 场景必做。
 
 ### 7.3 数据泄漏（Data Leakage）
 

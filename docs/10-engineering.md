@@ -194,7 +194,7 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = False
 ```
 
-⚠️ 即便如此，**多卡训练、原子加操作、cuDNN 的非确定性算法**仍可能导致结果有微小差异。面试时能说出"完全 bit-wise 复现在 GPU 上很难，我们保证的是统计意义上的复现"会显得很专业。
+**注意**：即便如此，**多卡训练、原子加操作、cuDNN 的非确定性算法**仍可能导致结果有微小差异。面试时能说出"完全 bit-wise 复现在 GPU 上很难，我们保证的是统计意义上的复现"会显得很专业。
 
 **实验管理**：用 W&B / TensorBoard / MLflow 记录指标；用 Hydra / OmegaConf 管配置；每次实验记录 **代码 commit + 配置 + 数据版本 + 随机种子**；一次只改一个变量。
 
