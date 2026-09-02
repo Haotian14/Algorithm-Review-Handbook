@@ -2,8 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    # 仓库当前的默认分支就是这个开发分支，合并到 main 后同样会触发
-    branches: [main, master, claude/algorithm-interview-handbook-xhqsx1]
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:

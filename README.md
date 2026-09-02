@@ -4,8 +4,7 @@
 
 **13 章系统笔记 · 130 道高频自测题 · 可运行的手撕代码**
 
-> 🌐 **网页版**：`https://<你的用户名>.github.io/Algorithm-Review-Handbook/`
-> （首次部署需按下方「部署」一节在仓库设置里打开 GitHub Pages）
+> 🌐 **在线阅读**：https://haotian14.github.io/Algorithm-Review-Handbook/
 
 ---
 
@@ -73,18 +72,21 @@ node scripts/serve.mjs      # → http://localhost:5173
 
 ## 部署
 
-仓库自带 GitHub Actions，推送即自动构建并发布到 GitHub Pages。
+站点已经上线：**https://haotian14.github.io/Algorithm-Review-Handbook/**
 
-**首次需要手动开一次开关**（只需一次，之后每次推送都会自动部署）：
+`.github/workflows/deploy.yml` 会在推送到 `main` 时自动构建并发布，平时不用管。
+
+<details>
+<summary>如果你 fork 了这个仓库，首次部署需要手动开一次开关</summary>
 
 1. 打开仓库 **Settings → Pages**
 2. **Source** 选 **GitHub Actions**（不是 Deploy from a branch）
 3. 回到 **Actions** 页签，重跑一次 `Deploy to GitHub Pages`
-4. 访问 `https://<你的用户名>.github.io/Algorithm-Review-Handbook/`
 
-> 这一步没法在 workflow 里自动化：创建 Pages 站点需要仓库的 `administration` 权限，
-> 而 workflow 的 `GITHUB_TOKEN` 拿不到（试过 `configure-pages` 的 `enablement: true`，
-> 报 `Resource not accessible by integration`）。
+这一步没法在 workflow 里自动化：创建 Pages 站点需要仓库的 `administration` 权限，
+而 workflow 的 `GITHUB_TOKEN` 拿不到（试过 `configure-pages` 的 `enablement: true`，
+报 `Resource not accessible by integration`）。
+</details>
 
 站点用的都是相对路径，所以放在子路径下也能正常工作。想换成自定义域名，在 `site/` 下加一个 `CNAME` 文件即可。
 
