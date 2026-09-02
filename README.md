@@ -73,13 +73,14 @@ node scripts/serve.mjs      # → http://localhost:5173
 
 ## 部署
 
-仓库自带 GitHub Actions，推到 `main` 会自动构建并发布到 GitHub Pages。
+仓库自带 GitHub Actions，推送即自动构建并发布到 GitHub Pages。
 
-**首次需要手动开一次开关**：
-1. 打开仓库 **Settings → Pages**
-2. **Source** 选择 **GitHub Actions**（不是 Deploy from a branch）
-3. 回到 **Actions** 页签，等 `Deploy to GitHub Pages` 跑完
-4. 访问 `https://<你的用户名>.github.io/Algorithm-Review-Handbook/`
+workflow 里的 `configure-pages` 带了 `enablement: true`，**首次部署会自动把 Pages 的源
+设成 GitHub Actions，不需要手动去设置页切换**。推完在 Actions 页签等 `Deploy to GitHub Pages`
+跑完，然后访问 `https://<你的用户名>.github.io/Algorithm-Review-Handbook/`。
+
+（如果组织策略禁止自动启用，就去 **Settings → Pages → Source** 手动选 **GitHub Actions**，
+再重跑一次 workflow。）
 
 站点用的都是相对路径，所以放在子路径下也能正常工作。想换成自定义域名，在 `site/` 下加一个 `CNAME` 文件即可。
 

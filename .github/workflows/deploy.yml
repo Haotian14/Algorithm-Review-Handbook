@@ -23,13 +23,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       # 把 docs/*.md 重新打包进 site/assets/content.js，保证线上内容与 markdown 一致
       - name: Build content bundle
         run: node scripts/build.mjs
 
+      # enablement: true 会在仓库首次部署时自动把 Pages 的源设成 GitHub Actions，
+      # 不需要再去 Settings 里手动切一次
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
