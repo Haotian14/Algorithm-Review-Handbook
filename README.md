@@ -50,10 +50,10 @@
 | 08 | [手撕：算法题](docs/08-coding-leetcode.md) | 九大模板、DP 专题、78 道高频题单、复杂度速查 |
 | 09 | [手撕：ML 组件](docs/09-coding-ml-scratch.md) | attention / AUC / NMS / K-Means / RoPE 等，**代码可直接跑** |
 | 10 | [工程能力](docs/10-engineering.md) | 显存计算、OOM、混合精度、DDP/ZeRO/TP/PP、推理部署 |
-| 11 | [项目与行为面](docs/11-project-behavioral.md) | 项目深挖六层套路、STAR-R、简历写法、反问 |
-| 13 | [算法系统设计](docs/13-system-design.md) | 通用答题框架、推荐/RAG 系统设计、指标体系、特征平台、容量估算 |
-| 14 | [SQL 与大数据](docs/14-sql-bigdata.md) | 窗口函数、留存漏斗、数据倾斜、Spark/Flink、样本构造 |
-| 12 | [高频题库](docs/12-question-bank.md) | 151 道自测题（由 `data/questions.json` 生成） |
+| 11 | [项目与行为面](docs/13-project-behavioral.md) | 项目深挖六层套路、STAR-R、简历写法、反问 |
+| 12 | [高频题库](docs/14-question-bank.md) | 151 道自测题（由 `data/questions.json` 生成） |
+| 13 | [算法系统设计](docs/11-system-design.md) | 通用答题框架、推荐/RAG 系统设计、指标体系、特征平台、容量估算 |
+| 14 | [SQL 与大数据](docs/12-sql-bigdata.md) | 窗口函数、留存漏斗、数据倾斜、Spark/Flink、样本构造 |
 
 ---
 
@@ -114,7 +114,7 @@ node scripts/serve.mjs      # → http://localhost:5173
 | 想改什么 | 改哪里 |
 |---|---|
 | 章节正文 | `docs/*.md`，然后 `node scripts/build.mjs` |
-| 题库 | `data/questions.json`（会自动生成 `docs/12-question-bank.md` 和网页抽题数据） |
+| 题库 | `data/questions.json`（会自动生成 `docs/14-question-bank.md` 和网页抽题数据） |
 | 新增一章 | 建 `docs/<编号>-<名字>.md`，并在 `scripts/build.mjs` 的 `CHAPTERS` 里登记（漏登记会构建报错） |
 | 站点样式 | `site/assets/style.css`（顶部一组 CSS 变量控制整套配色） |
 | 站点逻辑 | `site/assets/app.js` |

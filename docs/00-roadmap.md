@@ -73,22 +73,22 @@
 | W1–W2 | 数学基础 + 经典 ML（[01](01-math-basics.md), [02](02-machine-learning.md)） | LeetCode 数组/双指针/二分，3 题/天 |
 | W3–W4 | 深度学习基础（[03](03-deep-learning.md)） | 链表/栈队列/哈希，3 题/天 |
 | W5–W6 | 方向专精第一轮（[04](04-llm.md) 或 [05](05-recsys-ads.md) / [06](06-cv-multimodal.md)） | 二叉树/递归/回溯，3 题/天 |
-| W7–W8 | 手写代码专项（[09](09-coding-ml-scratch.md)）+ 工程（[10](10-engineering.md)）+ SQL（[14](14-sql-bigdata.md)） | DP + 图，2 题/天 |
-| W9–W10 | 项目梳理与 STAR 化（[11](11-project-behavioral.md)）+ 系统设计（[13](13-system-design.md)） | 高频题二刷，2 题/天 |
-| W11–W12 | 模拟面试 + 题库自测（[12](12-question-bank.md)） | 随机抽题限时写，2 题/天 |
+| W7–W8 | 手写代码专项（[09](09-coding-ml-scratch.md)）+ 工程（[10](10-engineering.md)）+ SQL（[12](12-sql-bigdata.md)） | DP + 图，2 题/天 |
+| W9–W10 | 项目梳理与 STAR 化（[13](13-project-behavioral.md)）+ 系统设计（[11](11-system-design.md)） | 高频题二刷，2 题/天 |
+| W11–W12 | 模拟面试 + 题库自测（[14](14-question-bank.md)） | 随机抽题限时写，2 题/天 |
 
 ### B. 1 个月（秋招已开，紧急）
 
-- 第 1 周：[12-question-bank](12-question-bank.md) 全过一遍，标记不会的 → 只补标记项。
+- 第 1 周：[14-question-bank](14-question-bank.md) 全过一遍，标记不会的 → 只补标记项。
 - 第 2 周：LeetCode Hot 100 + [09](09-coding-ml-scratch.md) 手写题全部默写一遍。
 - 第 3 周：项目 STAR 化 + 方向专精突击（只看你投的组对应的那一章）。
 - 第 4 周：每天一场模拟面（找人/找 AI），复盘卡壳点。
 
 ### C. 1 周（明天就面了）
 
-1. [12-question-bank](12-question-bank.md) 里"必答"标记 ★★★ 的题，全部能口述。
+1. [14-question-bank](14-question-bank.md) 里"必答"标记 ★★★ 的题，全部能口述。
 2. [09](09-coding-ml-scratch.md) 中的 **手写 self-attention / 手写 KMeans / 手写 AUC / 手写 NMS**，默写到不看答案。
-3. 把简历上每个项目写成 STAR 稿，念熟（[11](11-project-behavioral.md)）。
+3. 把简历上每个项目写成 STAR 稿，念熟（[13](13-project-behavioral.md)）。
 4. 面试当天早上：过一遍 [02](02-machine-learning.md) 和 [03](03-deep-learning.md) 的"一句话速记"表格。
 
 ---
@@ -140,7 +140,7 @@
 | [08 手撕代码：算法题](08-coding-leetcode.md) | 题型分类 + 模板 + 高频题单 | ★★★ |
 | [09 手撕代码：ML 组件](09-coding-ml-scratch.md) | attention/KMeans/AUC/NMS/BN/IoU 等可运行实现 | ★★★ |
 | [10 工程能力](10-engineering.md) | PyTorch/显存/分布式训练/推理部署/数据流 | ★★ |
-| [11 项目与行为面](11-project-behavioral.md) | 项目深挖套路/STAR/反问/HR 面 | ★★★ |
-| [13 算法系统设计](13-system-design.md) | 答题框架/推荐与 RAG 系统设计/指标/容量估算 | ★★★ |
-| [14 SQL 与大数据](14-sql-bigdata.md) | 窗口函数/留存漏斗/数据倾斜/Spark/Flink | ★★★ |
-| [12 高频题库](12-question-bank.md) | 按方向汇总的 151 道自测题 + 答案要点 | ★★★ |
+| [11 算法系统设计](11-system-design.md) | 答题框架/推荐与 RAG 系统设计/指标/容量估算 | ★★★ |
+| [12 SQL 与大数据](12-sql-bigdata.md) | 窗口函数/留存漏斗/数据倾斜/Spark/Flink | ★★★ |
+| [13 项目与行为面](13-project-behavioral.md) | 项目深挖套路/STAR/反问/HR 面 | ★★★ |
+| [14 高频题库](14-question-bank.md) | 按方向汇总的 151 道自测题 + 答案要点 | ★★★ |

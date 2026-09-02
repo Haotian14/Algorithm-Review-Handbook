@@ -1,6 +1,6 @@
 /**
  * 构建脚本（零依赖）：
- *   1. 根据 data/questions.json 生成 docs/12-question-bank.md
+ *   1. 根据 data/questions.json 生成 docs/14-question-bank.md
  *   2. 把 docs/*.md 全部打包成 site/assets/content.js，供静态站点直接使用
  *      （打包成 JS 而不是 fetch markdown，是为了让站点在 file:// 下也能打开）
  *
@@ -29,18 +29,18 @@ const CHAPTERS = [
   { id: '08-coding-leetcode',    title: '手撕：算法题',   short: '算法题',   group: '手撕',   vol: 'slow',  desc: '模板 + DP 专题 + 高频题单' },
   { id: '09-coding-ml-scratch',  title: '手撕：ML 组件',  short: 'ML 组件',   group: '手撕',   vol: 'slow',  desc: 'attention/AUC/NMS/KMeans 可运行实现' },
   { id: '10-engineering',        title: '工程能力',       short: '工程',     group: '进阶',   vol: 'mid',   desc: '显存/混合精度/分布式/部署' },
-  { id: '13-system-design',      title: '算法系统设计',   short: '系统设计', group: '进阶',   vol: 'mid',   desc: '推荐/RAG 系统设计、指标体系、容量估算' },
-  { id: '14-sql-bigdata',        title: 'SQL 与大数据',   short: 'SQL',      group: '进阶',   vol: 'slow',  desc: '窗口函数/留存漏斗/数据倾斜/Spark/Flink' },
-  { id: '11-project-behavioral', title: '项目与行为面',   short: '项目面',   group: '进阶',   vol: 'slow',  desc: '项目深挖套路/STAR/反问/简历' },
-  { id: '12-question-bank',      title: '高频题库',       short: '题库',      group: '进阶',   vol: 'mid',   desc: '自测题库，支持随机抽查' },
+  { id: '11-system-design',      title: '算法系统设计',   short: '系统设计', group: '进阶',   vol: 'mid',   desc: '推荐/RAG 系统设计、指标体系、容量估算' },
+  { id: '12-sql-bigdata',        title: 'SQL 与大数据',   short: 'SQL',      group: '进阶',   vol: 'slow',  desc: '窗口函数/留存漏斗/数据倾斜/Spark/Flink' },
+  { id: '13-project-behavioral', title: '项目与行为面',   short: '项目面',   group: '进阶',   vol: 'slow',  desc: '项目深挖套路/STAR/反问/简历' },
+  { id: '14-question-bank',      title: '高频题库',       short: '题库',      group: '进阶',   vol: 'mid',   desc: '自测题库，支持随机抽查' },
 ];
 
-// ----------------------------------------------------- 1. 生成 12-question-bank.md
+// ----------------------------------------------------- 1. 生成 14-question-bank.md
 const bank = JSON.parse(readFileSync(join(ROOT, 'data', 'questions.json'), 'utf8'));
 const catName = Object.fromEntries(bank.categories.map((c) => [c.id, c]));
 const stars = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
 
-let md = `# 12 · 高频题库
+let md = `# 14 · 高频题库
 
 > 共 **${bank.questions.length}** 道题，按方向分组。**先盖住答案自己说一遍，再对照要点。**
 > 网页版支持随机抽题、按方向/难度筛选和掌握度追踪 —— 用那个刷效率更高。
@@ -62,7 +62,7 @@ for (const cat of bank.categories) {
     md += `### ${i + 1}. ${q.q}\n\n\`${stars(q.l)}\`  ${q.a}\n\n`;
   });
 }
-writeFileSync(join(DOCS, '12-question-bank.md'), md);
+writeFileSync(join(DOCS, '14-question-bank.md'), md);
 
 // -------------------------------------------------- 2. 打包 markdown 到 content.js
 const files = readdirSync(DOCS).filter((f) => f.endsWith('.md'));
@@ -89,5 +89,5 @@ const out =
 writeFileSync(join(ROOT, 'site', 'assets', 'content.js'), out);
 
 const total = chapters.reduce((s, c) => s + c.words, 0);
-console.log(`✓ docs/12-question-bank.md  (${bank.questions.length} 题)`);
+console.log(`✓ docs/14-question-bank.md  (${bank.questions.length} 题)`);
 console.log(`✓ site/assets/content.js    (${chapters.length} 章 / 约 ${(total / 1000).toFixed(1)}k 字 / ${(out.length / 1024).toFixed(0)} KB)`);

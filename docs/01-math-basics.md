@@ -80,15 +80,16 @@ MLE：$\hat\theta = \arg\max_\theta \prod_i p(x_i|\theta)$，取对数变成 $\a
 最小化交叉熵 $-\sum_i \sum_c y_{ic}\log \hat{y}_{ic}$ ⟺ 最大化对数似然 ⟺ 最小化经验分布与模型分布的 KL 散度（因为 $\text{CE}(p,q) = H(p) + \text{KL}(p\|q)$，$H(p)$ 是常数）。
 
 **加上先验就是 MAP**：$L_2$ 正则 ⟺ 高斯先验；$L_1$ 正则 ⟺ 拉普拉斯先验。这条经常被追问。
+追问一层：正则系数不是随便来的 —— 高斯噪声 + 高斯先验下 $\lambda=\sigma^2_{\text{noise}}/\sigma^2_{\text{prior}}$，**先验越强（方差越小）正则越重**。
 
 ### 2.2 信息论三件套
 
 | 概念 | 公式 | 直觉 |
 |---|---|---|
-| 熵 | $H(p) = -\sum p\log p$ | 分布的不确定性/最优编码长度 |
+| 熵 | $H(p) = -\sum p\log p$ | 分布的不确定性/最优编码长度。底取 2 单位是 bit，取 $e$ 是 nat；机器学习里默认自然对数 |
 | 交叉熵 | $H(p,q) = -\sum p\log q$ | 用 $q$ 的编码去编码 $p$ 的平均长度 |
 | KL 散度 | $\text{KL}(p\|q) = \sum p\log\frac{p}{q}$ | 多付出的编码代价，$\ge 0$，**不对称** |
-| JS 散度 | $\frac12\text{KL}(p\|m)+\frac12\text{KL}(q\|m)$ | 对称化，原始 GAN 的目标 |
+| JS 散度 | $\frac12\text{KL}(p\|m)+\frac12\text{KL}(q\|m)$，其中 $m=\frac{p+q}{2}$ | 对称化且有界（$0\le \text{JS}\le\log 2$），原始 GAN 的目标 |
 
 **追问：为什么 KL 不对称会有问题？**
 $\text{KL}(p\|q)$（forward，"mean-seeking"）在 $p>0$ 而 $q\to 0$ 处惩罚巨大 → $q$ 会覆盖 $p$ 的所有模式，倾向于摊平。$\text{KL}(q\|p)$（reverse，"mode-seeking"）会让 $q$ 收缩到 $p$ 的某个峰上 → VAE 用 reverse KL 会有后验坍缩；RLHF 里用 KL 惩罚防止策略跑偏也是这个形式。
@@ -99,7 +100,8 @@ $$\mathbb{E}[(y-\hat f)^2] = \underbrace{(\mathbb{E}[\hat f]-f)^2}_{\text{Bias}^
 
 - 高偏差 = 欠拟合：模型太简单 → 加特征、加深模型、减正则。
 - 高方差 = 过拟合：模型太复杂 → 加数据、加正则、Dropout、早停、集成。
-- **Bagging 主要降方差**（并行独立模型取平均），**Boosting 主要降偏差**（串行拟合残差）。这是随机森林 vs GBDT 的核心区别。
+- **Bagging 主要降方差**（并行训练多个模型取平均），**Boosting 主要降偏差**（串行拟合残差）。这是随机森林 vs GBDT 的核心区别。
+  注意 Bagging 的各模型**并不真正独立**（bootstrap 样本高度重叠），所以方差不会随树数趋于 0 —— 详见 [02 §3.2](02-machine-learning.md) 的 $\text{Var}(\bar X)=\rho\sigma^2+\frac{1-\rho}{T}\sigma^2$，这正是随机森林还要加特征随机的原因。
 
 ### 2.4 常见分布速查
 
@@ -110,7 +112,7 @@ $$\mathbb{E}[(y-\hat f)^2] = \underbrace{(\mathbb{E}[\hat f]-f)^2}_{\text{Bias}^
 | 泊松 $\text{Pois}(\lambda)$ | 单位时间事件数（QPS、请求量） | $\lambda$ / $\lambda$ |
 | 指数 $\text{Exp}(\lambda)$ | 事件间隔时间，无记忆性 | $1/\lambda$ / $1/\lambda^2$ |
 | 高斯 | 中心极限定理的产物 | $\mu$ / $\sigma^2$ |
-| Beta | 伯努利的共轭先验（Thompson 采样） | $\frac{\alpha}{\alpha+\beta}$ |
+| Beta | 伯努利的共轭先验（Thompson 采样） | $\frac{\alpha}{\alpha+\beta}$ / $\frac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)}$ |
 
 **Beta 分布为什么在推荐里重要**：Thompson Sampling 做探索时，用 Beta$(\alpha+\text{点击数}, \beta+\text{未点击数})$ 维护 CTR 的后验，采样出值排序 → 天然平衡 exploration/exploitation。
 
@@ -119,7 +121,7 @@ $$\mathbb{E}[(y-\hat f)^2] = \underbrace{(\mathbb{E}[\hat f]-f)^2}_{\text{Bias}^
 - **p-value**：原假设成立时，观测到当前或更极端结果的概率。**不是**"原假设为真的概率"（这是最常见的错误理解，面试官爱挖）。
 - **一类错误 $\alpha$**：弃真（把没效果的当成有效果）；**二类错误 $\beta$**：取伪。功效 = $1-\beta$。
 - **样本量估算**：$n \approx \frac{2(z_{\alpha/2}+z_\beta)^2\sigma^2}{\delta^2}$，$\delta$ 是想检测的最小效应。要检测更小的提升，样本量按平方反比增长 —— 这就是为什么 0.1% 的 CTR 提升需要跑很久。
-- **多重检验**：同时看 20 个指标，即使全无效也大概率有 1 个"显著"。用 Bonferroni 或 FDR 校正。
+- **多重检验**：$\alpha=0.05$ 下同时做 20 个独立检验，至少一个假阳性的概率是 $1-0.95^{20}\approx 64\%$。用 Bonferroni（保守，把阈值除以检验数）或 FDR/Benjamini-Hochberg（控制错误发现比例，实践中更常用）校正。
 
 ---
 
