@@ -1,4 +1,4 @@
-# 12 · 高频题库
+# 14 · 高频题库
 
 > 共 **151** 道题，按方向分组。**先盖住答案自己说一遍，再对照要点。**
 > 网页版支持随机抽题、按方向/难度筛选和掌握度追踪 —— 用那个刷效率更高。
@@ -569,7 +569,7 @@
 
 ## 项目与行为面（7 题）
 
-> 详细讲解见 [11-project-behavioral](11-project-behavioral.md)
+> 详细讲解见 [13-project-behavioral](13-project-behavioral.md)
 
 ### 1. 面试官深挖项目的固定套路是什么？
 
@@ -604,7 +604,7 @@
 
 ## 系统设计（10 题）
 
-> 详细讲解见 [13-system-design](13-system-design.md)
+> 详细讲解见 [11-system-design](11-system-design.md)
 
 ### 1. 面对「设计一个推荐系统」这种开放题，你的回答顺序是什么？
 
@@ -651,7 +651,7 @@
 
 ## SQL 与大数据（11 题）
 
-> 详细讲解见 [14-sql-bigdata](14-sql-bigdata.md)
+> 详细讲解见 [12-sql-bigdata](12-sql-bigdata.md)
 
 ### 1. ROW_NUMBER、RANK、DENSE_RANK 有什么区别？分组 Top-N 该用哪个？
 

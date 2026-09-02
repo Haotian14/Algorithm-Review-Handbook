@@ -1,6 +1,6 @@
 {
   "meta": {
-    "description": "算法岗面试高频题库。用于网页版的随机抽题/闪卡自测，同时构建脚本会据此生成 docs/12-question-bank.md。",
+    "description": "算法岗面试高频题库。用于网页版的随机抽题/闪卡自测，同时构建脚本会据此生成 docs/14-question-bank.md。",
     "levels": {
       "3": "必答，答不上直接扣大分",
       "2": "高频，建议掌握",
@@ -56,17 +56,17 @@
     {
       "id": "hr",
       "name": "项目与行为面",
-      "chapter": "11-project-behavioral"
+      "chapter": "13-project-behavioral"
     },
     {
       "id": "sysd",
       "name": "系统设计",
-      "chapter": "13-system-design"
+      "chapter": "11-system-design"
     },
     {
       "id": "sql",
       "name": "SQL 与大数据",
-      "chapter": "14-sql-bigdata"
+      "chapter": "12-sql-bigdata"
     }
   ],
   "questions": [
