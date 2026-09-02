@@ -2,7 +2,7 @@
   "name": "algorithm-review-handbook",
   "version": "1.0.0",
   "private": true,
-  "description": "算法岗面试复习手册：13 章系统笔记 + 130 道高频自测题 + 可运行的手撕代码",
+  "description": "算法岗面试复习手册：17 章系统笔记 + 201 道高频自测题 + 可运行的手撕代码",
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs && node scripts/serve.mjs",

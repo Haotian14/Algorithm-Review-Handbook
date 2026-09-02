@@ -355,7 +355,7 @@ const INDEX = (() => {
   const out = [];
   const stripMath = t => t.replace(/\$\$[\s\S]*?\$\$/g, ' ').replace(/\$[^$\n]*\$/g, ' ');
   for (const c of CH) {
-    if (c.id === '14-question-bank') continue;   // 题库单独入索引，避免重复
+    if (c.id === '16-question-bank') continue;   // 题库单独入索引，避免重复
     // 按二级/三级标题切成小节，命中后可以直接定位
     const blocks = c.body.split(/\n(?=#{2,3} )/);
     for (const b of blocks) {
@@ -370,7 +370,7 @@ const INDEX = (() => {
   }
   // 题库也进索引
   for (const q of QS) {
-    out.push({ cid: '14-question-bank', cshort: '题库', heading: stripMath(q.q).replace(/[*`]/g, ''),
+    out.push({ cid: '16-question-bank', cshort: '题库', heading: stripMath(q.q).replace(/[*`]/g, ''),
                text: stripMath(q.a).replace(/[*`]/g, '').replace(/\s+/g, ' ').trim(),
                low: (q.q + ' ' + q.a).toLowerCase() });
   }

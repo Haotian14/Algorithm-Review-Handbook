@@ -28,4 +28,4 @@ jobs:
         run: node scripts/build.mjs
 
       - name: content.js 是否与 docs 同步
-        run: git diff --exit-code -- site/assets/content.js docs/12-question-bank.md
+        run: git diff --exit-code -- site/assets/content.js docs/16-question-bank.md
