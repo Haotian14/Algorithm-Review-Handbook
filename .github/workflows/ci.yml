@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 手撕代码自测
+        run: |
+          pip install --quiet numpy
+          python code/ml_components.py
+
+      - name: 构建内容包（顺带校验章节登记是否完整）
+        run: node scripts/build.mjs
+
+      - name: content.js 是否与 docs 同步
+        run: git diff --exit-code -- site/assets/content.js docs/12-question-bank.md
